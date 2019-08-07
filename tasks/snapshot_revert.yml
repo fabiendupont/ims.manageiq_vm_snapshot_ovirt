@@ -1,0 +1,30 @@
+---
+- name: Revert snapshot
+  uri:
+    url: "{{ manageiq_vm_resource.href }}/snapshots/{{ snapshot_id }}"
+    validate_certs: false
+    headers:
+      X-Auth-Token: "{{ manageiq.api_token }}"
+    method: POST
+    body_format: json
+    body:
+      action: revert
+  register: snapshot_revert_task
+
+- name: Wait for snapshot revert task to complete
+  uri:
+    url: "{{ snapshot_revert_task.json.task_href }}?expand=resources"
+    validate_certs: false
+    headers:
+      X-Auth-Token: "{{ manageiq.api_token }}"
+    method: GET
+  register: manageiq_task_resource_json
+  until: "manageiq_task_resource_json.json.state == 'Finished'"
+  retries: 60
+  delay: 15
+
+- name: Assert if revert operation was successful
+  assert:
+    that:
+      - "manageiq_task_resource_json.json.status == 'Ok'"
+    msg: "Revert operation failed: '{{ manageiq_task_resource_json.json.message }}'"

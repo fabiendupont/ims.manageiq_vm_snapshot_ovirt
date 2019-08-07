@@ -1,0 +1,25 @@
+---
+- name: Delete snapshot
+  uri:
+    url: "{{ manageiq_vm_resource.href }}/snapshots/{{ snapshot_id }}"
+    validate_certs: false
+    headers:
+      X-Auth-Token: "{{ manageiq.api_token }}"
+    method: POST
+    body_format: json
+    body:
+      action: delete
+  when:
+    - "manageiq_vm_resource.cloud == false"
+
+- name: Wait for snapshot to be deleted
+  uri:
+    url: "{{ manageiq_vm_resource.href }}/snapshots/?expand=resources&filter[]=name={{ snapshot_name | regex_replace(' ', '%20') }}"
+    validate_certs: false
+    headers:
+      X-Auth-Token: "{{ manageiq.api_token }}"
+    method: GET
+  register: manageiq_vm_snapshot_resources_json
+  until: manageiq_vm_snapshot_resources_json.json.subcount == 0
+  retries: 60
+  delay: 15

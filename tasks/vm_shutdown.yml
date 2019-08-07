@@ -1,0 +1,25 @@
+---
+- name: Shutdown VM
+  uri:
+    url: "{{ manageiq_vm_resource.href }}"
+    validate_certs: false
+    headers:
+      X-Auth-Token: "{{ manageiq.api_token }}"
+    method: POST
+    body_format: json
+    body:
+      action: shutdown_guest
+  when:
+    - "snapshot_mode == 'cold'"
+
+- name: Wait for VM to be off
+  uri:
+    url: "{{ manageiq_vm_resource.href }}?expand=resources"
+    validate_certs: false
+    headers:
+      X-Auth-Token: "{{ manageiq.api_token }}"
+    method: GET
+  register: manageiq_vm_resource_json
+  until: "manageiq_vm_resource_json.json.power_state == 'off'"
+  retries: 60
+  delay: 15

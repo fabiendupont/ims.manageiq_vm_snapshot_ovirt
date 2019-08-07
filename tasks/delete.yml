@@ -1,0 +1,15 @@
+---
+- block:
+  - name: Assert if the snapshot already exists
+    assert:
+      that:
+        - "snapshot_id is defined"
+      msg: "Snapshot {{ snapshot_name }} doesn't exist. Quitting."
+
+  - include_tasks: vm_shutdown.yml
+
+  - include_tasks: snapshot_delete.yml
+
+  - include_tasks: vm_start.yml
+
+  delegate_to: localhost

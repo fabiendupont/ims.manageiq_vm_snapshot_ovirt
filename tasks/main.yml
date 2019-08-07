@@ -1,0 +1,10 @@
+---
+- name: Assert if the snapshot_name and vm_name variables are defined
+  assert:
+    that:
+      - "snapshot_name is defined"
+    msg: "The 'snapshot_name' variable has to be defined. Quitting."
+
+- include_tasks: vm_get_snapshots.yml
+
+- include_tasks: "{{ role_action }}.yml"

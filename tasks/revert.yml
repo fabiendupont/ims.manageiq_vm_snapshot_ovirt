@@ -1,0 +1,26 @@
+---
+- block:
+  - name: Assert if the snapshot already exists
+    assert:
+      that:
+        - "snapshot_id is defined"
+      msg: "Snapshot {{ snapshot_name }} doesn't exist. Quitting."
+
+  - name: Assert if the VM is a cloud instance
+    assert:
+      that:
+        - "manageiq_vm_resource.cloud == false"
+      msg: "Cloud instance don't support snapshot revert. Quitting"
+
+  - include_tasks: vm_shutdown.yml
+
+  - include_tasks: snapshot_revert.yml
+
+  - include_tasks: snapshot_delete.yml
+    when:
+      - "snapshot_delete_after_revert is defined"
+      - "snapshot_delete_after_revert"
+
+  - include_tasks: vm_start.yml
+
+  delegate_to: localhost
