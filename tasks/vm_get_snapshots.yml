@@ -1,22 +1,25 @@
 ---
-- name: Get the VM resource with snapshots from ManageIQ API
-  uri:
-    url: "{{ manageiq.api_url }}/api/vms/?expand=resources&attributes=snapshots&filter[]=uid_ems={{ ansible_product_uuid | lower }}"
-    validate_certs: false
-    headers:
-      X-Auth-Token: "{{ manageiq.api_token }}"
-    method: GET
-  register: manageiq_vm_resources_json
+- block:
+  - name: Get the VM resource with snapshots from ManageIQ API
+    uri:
+      url: "{{ manageiq.api_url }}/api/vms/?expand=resources&attributes=snapshots&filter[]=uid_ems={{ ansible_product_uuid | lower }}"
+      validate_certs: false
+      headers:
+        X-Auth-Token: "{{ manageiq.api_token }}"
+      method: GET
+    register: manageiq_vm_resources_json
+  
+  - name: Register the VM resource from JSON
+    set_fact:
+      manageiq_vm_resource: "{{ manageiq_vm_resources_json.json | json_query('resources[*]') | first }}"
+  
+  - name: Register snapshot id if it exists
+    set_fact:
+      snapshot_id: "{{ snapshot.id }}"
+    when:
+      - "snapshot.name == snapshot_name"
+    loop: "{{ manageiq_vm_resource.snapshots }}"
+    loop_control:
+      loop_var: snapshot
 
-- name: Register the VM resource from JSON
-  set_fact:
-    manageiq_vm_resource: "{{ manageiq_vm_resources_json.json | json_query('resources[*]') | first }}"
-
-- name: Register snapshot id if it exists
-  set_fact:
-    snapshot_id: "{{ snapshot.id }}"
-  when:
-    - "snapshot.name == snapshot_name"
-  loop: "{{ manageiq_vm_resource.snapshots }}"
-  loop_control:
-    loop_var: snapshot
+  delegate_to: localhost
