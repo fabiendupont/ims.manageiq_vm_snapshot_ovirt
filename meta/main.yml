@@ -1,5 +1,5 @@
 galaxy_info:
-  name: fdupont_redhat.ims_manageiq_vm_snapshot_ovirt
+  role_name: ims_manageiq_vm_snapshot_ovirt
   author: Fabien Dupont <fdupont@redhat.com>
   description: This role allows creation and deletion of oVirt / RHV snapshot via ManageIQ API
   company: Red Hat
