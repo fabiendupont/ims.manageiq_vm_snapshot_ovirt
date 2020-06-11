@@ -10,7 +10,7 @@
     body:
       action: delete
   when:
-    - "manageiq_vm_resource.cloud == false"
+    - "not manageiq_vm_resource.cloud"
 
 - name: Wait for snapshot to be deleted
   uri:

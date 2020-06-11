@@ -9,7 +9,7 @@
   - name: Assert if the VM is a cloud instance
     assert:
       that:
-        - "manageiq_vm_resource.cloud == false"
+        - "not manageiq_vm_resource.cloud"
       msg: "Cloud instance don't support snapshot revert. Quitting"
 
   - include_tasks: vm_shutdown.yml
