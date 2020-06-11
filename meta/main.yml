@@ -1,23 +1,20 @@
 galaxy_info:
-  author: Fabien Dupont
-  description: This role allows creation and deletion of RHV snapshot via ManageIQ API
+  name: fdupont_redhat.ims_manageiq_vm_snapshot_ovirt
+  author: Fabien Dupont <fdupont@redhat.com>
+  description: This role allows creation and deletion of oVirt / RHV snapshot via ManageIQ API
   company: Red Hat
 
-  license: GPLv3
+  license: license (Apache)
 
   min_ansible_version: 2.4
 
-  # platforms:
-  # - name: Fedora
-  #   versions:
-  #   - all
-  #   - 25
-  # - name: SomePlatform
-  #   versions:
-  #   - all
-  #   - 1.0
-  #   - 7
-  #   - 99.99
+  platforms:
+    - name: EL
+      versions:
+        - 7
+        - 8
 
   galaxy_tags:
     - ims
+
+dependencies: []
